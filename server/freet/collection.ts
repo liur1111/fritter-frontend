@@ -96,6 +96,7 @@ class FreetCollection {
   static async deleteMany(authorId: Types.ObjectId | string): Promise<void> {
     await FreetModel.deleteMany({authorId});
   }
+  
 }
 
 export default FreetCollection;

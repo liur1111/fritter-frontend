@@ -1,6 +1,8 @@
 import type {NextFunction, Request, Response} from 'express';
 import express from 'express';
 import FreetCollection from './collection';
+import ViewCollection from '../view/collection';
+import ReplyCollection from '../reply/collection';
 import * as userValidator from '../user/middleware';
 import * as freetValidator from '../freet/middleware';
 import * as util from './util';
@@ -12,8 +14,7 @@ const router = express.Router();
  *
  * @name GET /api/freets
  *
- * @return {FreetResponse[]} - A list of all the freets sorted in descending
- *                      order by date modified
+ * @return {FreetResponse[]} - A list of all the freets sorted in descending order by date modified
  */
 /**
  * Get freets by author.
@@ -23,13 +24,19 @@ const router = express.Router();
  * @return {FreetResponse[]} - An array of freets created by user with username, author
  * @throws {400} - If author is not given
  * @throws {404} - If no user has given author
- *
+ */
+/**
+ * @name GET /api/freets?freetId=id
+ * 
+ * @return {FreetResponse[]} - The freet created with freetId
+ * @throws {400} - If freetId is not given
+ * @throws {404} - If no freet has given freetId
  */
 router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
     // Check if author query parameter was supplied
-    if (req.query.author !== undefined) {
+    if (req.query.author !== undefined || req.query.freetId !== undefined) {
       next();
       return;
     }
@@ -39,11 +46,25 @@ router.get(
     res.status(200).json(response);
   },
   [
-    userValidator.isAuthorExists
+    freetValidator.isAuthorExists
   ],
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    // Check if freetId query parameter was supplied
+    if (req.query.freetId !== undefined) {
+      next();
+      return;
+    }
+
     const authorFreets = await FreetCollection.findAllByUsername(req.query.author as string);
     const response = authorFreets.map(util.constructFreetResponse);
+    res.status(200).json(response);
+  },
+  [
+    freetValidator.isFreetQueryExists
+  ],
+  async (req: Request, res: Response) => {
+    const freet = await FreetCollection.findOne(req.query.freetId as string);
+    const response = util.constructFreetResponse(freet);
     res.status(200).json(response);
   }
 );
@@ -90,7 +111,7 @@ router.delete(
   '/:freetId?',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isFreetExists,
+    freetValidator.isFreetParamsExists,
     freetValidator.isValidFreetModifier
   ],
   async (req: Request, res: Response) => {
@@ -118,7 +139,7 @@ router.patch(
   '/:freetId?',
   [
     userValidator.isUserLoggedIn,
-    freetValidator.isFreetExists,
+    freetValidator.isFreetParamsExists,
     freetValidator.isValidFreetModifier,
     freetValidator.isValidFreetContent
   ],
