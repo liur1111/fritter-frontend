@@ -47,12 +47,33 @@ router.get(
     followValidator.getUsernameExists
   ],
   async (req: Request, res: Response) => {
-    console.log("MADE IT");
     const followObj = await FollowCollection.findFollowByUsername(req.query.username as string);
     const response = await util.constructFollowResponse(followObj);
     res.status(200).json({
       message: `Successfully retrieved followers for ${req.query.username as string}`,
       followObj: response
+    });
+  }
+);
+
+/**
+ * @name GET /api/follow/isFollowing?username=username
+ *
+ * @return {FollowResponse} - user USERNAME's followers
+ * @throws {400} - If username is not given
+ * @throws {404} - If no user has given username
+ */
+router.get(
+  '/isFollowing',
+  [
+    userValidator.isUserLoggedIn,
+    followValidator.getUsernameExists
+  ],
+  async (req: Request, res: Response) => {
+    const isFollowing = await FollowCollection.isFollowing(req.session.userId, req.query.username as string);
+    res.status(200).json({
+      message: `Following ${req.query.username as string}: ${isFollowing}`,
+      isFollowing: isFollowing
     });
   }
 );
