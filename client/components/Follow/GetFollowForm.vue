@@ -3,6 +3,7 @@
     <button @click="open">
       {{ usernames.length }}
     </button>
+    &nbsp;{{ this.type }}
     <GetFollowPopUp 
       v-if="this.isOpen == true"
       @close="close"

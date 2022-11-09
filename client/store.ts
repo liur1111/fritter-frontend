@@ -15,6 +15,11 @@ const store = new Vuex.Store({
     profileName: null, // Username of profilePage
     followers: [], // All followers under profilePage
     following: [], // All following of profilePage
+    upvoters: [], // All upvoters under profilePage
+    upvoting: [], // All upvoting of profilePage
+    downvoters: [], // All downvoters under profilePage
+    downvoting: [], // All downvoting of profilePage
+    isReputable: false, // True if can upvote/downvote, False otherwise
     username: null, // Username of the logged in user
     alerts: {} // global success/error messages encountered during submissions to non-visible forms
   },
@@ -77,6 +82,41 @@ const store = new Vuex.Store({
        */
       state.following = following;
     },
+    updateUpvoters(state, upvoters) {
+      /**
+       * Update the stored upvoters in profilePage to the provided upvoters.
+       * @param upvoters - upvoters to store
+       */
+      state.upvoters = upvoters;
+    },
+    updateUpvoting(state, upvoting) {
+      /**
+       * Update the stored upvoting in profilePage to the provided upvoting.
+       * @param upvoting - upvoting to store
+       */
+      state.upvoting = upvoting;
+    },
+    updateDownvoters(state, downvoters) {
+      /**
+       * Update the stored downvoters in profilePage to the provided downvoters.
+       * @param downvoters - downvoters to store
+       */
+      state.downvoters = downvoters;
+    },
+    updateDownvoting(state, downvoting) {
+      /**
+       * Update the stored downvoting in profilePage to the provided downvoting.
+       * @param downvoting - downvoting to store
+       */
+      state.downvoting = downvoting;
+    },
+    updateIsReputable(state, isReputable) {
+      /**
+       * Update the stored isReputable of a profilePage to the provided isReputable.
+       * @param isReputable - isReputable to store
+       */
+      state.isReputable = isReputable;
+    },
     async refreshFreets(state) {
       /**
        * Request the server for the currently available freets.
@@ -85,15 +125,6 @@ const store = new Vuex.Store({
       const res = await fetch(url).then(async r => r.json());
       state.freets = res;
     },
-    async refreshFollowCondition(state) {
-      /**
-       * Request the server for the currently available follow status.
-       */
-      const urlFollowObj = state.profileName ? `/api/follow?username=${state.profileName}` : '/api/follow';
-      const resFollowObj = await fetch(urlFollowObj).then(async r => r.json());
-      state.followers = resFollowObj.followers;
-      state.following = resFollowObj.following;
-    }
   },
   // Store data across page refreshes, only discard on browser close
   plugins: [createPersistedState()]

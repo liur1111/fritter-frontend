@@ -22,18 +22,37 @@ Default page that also displays profiles
         </div>
       </header>
       <GetFollowButton 
-        class="left"
         v-if="$store.state.profileName !== $store.state.username"
         :username="$store.state.username"
+        :profileName="$store.state.profileName"
       />
-      <GetFollowForm 
-        :type="Followers"
+      <GetReputationButton
+        v-if="($store.state.profileName !== $store.state.username) && $store.state.isReputable"
+        :username="$store.state.username"
+        :profileName="$store.state.profileName"
+      />
+      <header>
+        <div v-if="$store.state.profileFreets.length !== 1">
+          <b>{{ $store.state.profileFreets.length }}</b> &nbsp; Freets
+        </div>
+        <div v-else>
+          <b>{{ $store.state.profileFreets.length }}</b> &nbsp; Freet
+        </div>
+        <GetFollowForm 
+        :type="'Followers'"
         :usernames="$store.state.followers"
-      />
-      <GetFollowForm 
-        :type="Following"
-        :usernames="$store.state.following"
-      />
+        />
+        <GetFollowForm 
+          :type="'Following'"
+          :usernames="$store.state.following"
+        />
+        <GetReputationForm
+          :upvoters="$store.state.upvoters"
+          :upvoting="$store.state.upvoting"
+          :downvoters="$store.state.downvoters"
+          :downvoting="$store.state.downvoting"
+        /> 
+      </header>
       <section>
         <h2>
           Freets
@@ -55,12 +74,13 @@ import FreetComponent from '@/components/Freet/FreetComponent.vue';
 import GetProfilesForm from '@/components/Profile/GetProfilesForm.vue';
 import GetFollowButton from '@/components/Follow/GetFollowButton.vue';
 import GetFollowForm from '@/components/Follow/GetFollowForm.vue';
+import GetReputationForm from '@/components/Reputation/GetReputationForm.vue';
+import GetReputationButton from '@/components/Reputation/GetReputationButton.vue';
 
 export default {
   name: 'ProfilePage',
-  components: {FreetComponent, GetProfilesForm, GetFollowButton, GetFollowForm},
+  components: {FreetComponent, GetProfilesForm, GetFollowButton, GetFollowForm, GetReputationForm, GetReputationButton},
   mounted() {
-    // this.$store.commit('refreshFollowCondition');
     this.$refs.getProfilesForm.submit();
   }
 };

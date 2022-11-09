@@ -48,10 +48,15 @@
     >
       {{ freet.content }}
     </p>
-    <p class="info">
-      Posted at {{ freet.dateModified }}
-      <i v-if="freet.edited">(edited)</i>
-    </p>
+    <div class="info-format">
+      <p class="info left">
+        Posted at {{ freet.dateModified }}
+        <i v-if="freet.edited">(edited)</i>
+      </p>
+      <p class="right" onload="getViews()">
+        <GetViewsForm :freetId="freet._id" />
+      </p>
+    </div>
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"
@@ -65,8 +70,10 @@
 </template>
 
 <script>
+import GetViewsForm from '@/components/Views/GetViewsForm.vue';
 export default {
   name: 'FreetComponent',
+  components: {GetViewsForm},
   props: {
     // Data from the stored freet
     freet: {
@@ -74,6 +81,7 @@ export default {
       required: true
     }
   },
+  mounted() {},
   data() {
     return {
       editing: false, // Whether or not this freet is in edit mode
@@ -132,6 +140,18 @@ export default {
       };
       this.request(params);
     },
+    // getViews() {
+    //   const params = {
+    //     method: 'GET',
+    //     callback: () => {
+    //       this.$store.commit('alert', {
+    //         message: 'Successfully retrieved viewcount',
+    //         status: 'Success'
+    //       });
+    //     }
+    //   };
+    //   this.getViewCount(params);
+    // },
     async request(params) {
       /**
        * Submits a request to the freet's endpoint
@@ -161,7 +181,36 @@ export default {
         this.$set(this.alerts, e, 'error');
         setTimeout(() => this.$delete(this.alerts, e), 3000);
       }
-    }
+    },
+    // async getViewCount() {
+    //   /**
+    //    * Returns number of views on freet.
+    //    * @param params - Options for the request
+    //    * @param params.body - Body for the request, if it exists
+    //    * @param params.callback - Function to run if the the request succeeds
+    //    */
+    //   const options = {
+    //     method: params.method, headers: {'Content-Type': 'application/json'}
+    //   };
+    //   if (params.body) {
+    //     options.body = params.body;
+    //   }
+    //   try {
+    //     const r = await fetch(`/api/views?freetId=${this.freet._id}`, options);
+    //     if (!r.ok) {
+    //       const res = await r.json();
+    //       throw new Error(res.error);
+    //     } else {
+    //       const res = await r.json();
+    //       this.viewCount = res.numViews;
+    //       this.viewCount = 2;
+    //       params.callback();
+    //     }
+    //   } catch (e) {
+    //     this.$set(this.alerts, e, 'error');
+    //     setTimeout(() => this.$delete(this.alerts, e), 3000);
+    //   }
+    // }
   }
 };
 </script>
@@ -172,4 +221,10 @@ export default {
     padding: 20px;
     position: relative;
 }
+.info-format {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 </style>
+

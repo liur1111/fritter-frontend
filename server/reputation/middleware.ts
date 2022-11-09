@@ -90,7 +90,7 @@ const isNotSelf = async (req: Request, res: Response, next: NextFunction) => {
   const user = await UserCollection.findOneByUserId(req.session.userId);
   const isFollowed = await FollowCollection.isFollowing(reputedUser._id, user.username);
   const isViewedEnough = await ViewCollection.hasSeenEnough(req.session.userId, req.body.username);
-  if (!isFollowing && !isFollowed && isViewedEnough) {
+  if (!isFollowing && !isFollowed && !isViewedEnough) {
     res.status(409).json({
       error: `Not valid to repute ${req.body.username}.`
     });

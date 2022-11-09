@@ -1,20 +1,45 @@
 <template>
-  <!-- <script src="https://unpkg.com/vue@2"></script> -->
   <div class="modal-mask">
     <div class="modal-wrapper">
-      <div class="modal-container1">
+      <div class="modal-container">
         <div class="modal-header">
-          {{ this.type }}
           <button class="modal-default-button" @click="$emit('close')">
             X
           </button>
         </div>
-        <div class="modal-body1">
-          <ul v-for="username in usernames">
-            <li>
-              {{ username }}
-            </li>
-          </ul>
+        <div class="modal-body">
+          <div>
+            Upvoters
+            <ul v-for="username in upvoters">
+              <li>
+                {{ username }}
+              </li>
+            </ul>
+          </div>
+          <div>
+            Downvoters
+            <ul v-for="username in downvoters">
+              <li>
+                {{ username }}
+              </li>
+            </ul>
+          </div>
+          <div>
+            Upvoting
+            <ul v-for="username in upvoting">
+              <li>
+                {{ username }}
+              </li>
+            </ul>
+          </div>
+          <div>
+            Downvoting
+            <ul v-for="username in downvoting">
+              <li>
+                {{ username }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -23,13 +48,21 @@
 
 <script>
 export default {
-  name: 'GetFollowPopUp',
+  name: 'GetReputationPopUp',
   props: {
-    type: {
-      type: String,
+    upvoters: {
+      type: Array,
       required: true
     },
-    usernames: {
+    downvoters: {
+      type: Array,
+      required: true
+    },
+    upvoting: {
+      type: Array,
+      required: true
+    },
+    downvoting: {
       type: Array,
       required: true
     }
@@ -37,7 +70,10 @@ export default {
   data() {
     return {
       type: this.type,
-      usernames: this.usernames
+      upvoters: this.upvoters,
+      downvoters: this.downvoters,
+      upvoting: this.upvoting,
+      downvoting: this.downvoting
     };
   },
   methods: {
@@ -64,8 +100,8 @@ export default {
   vertical-align: middle;
 }
 
-.modal-container1 {
-  width: 300px;
+.modal-container {
+  width: 600px;
   margin: 0px auto;
   padding: 20px 30px;
   background-color: #fff;
@@ -80,8 +116,10 @@ export default {
   color: #42b983;
 }
 
-.modal-body1 {
+.modal-body {
   margin: 20px 0;
+  display: flex;
+  justify-content: space-between;
 }
 
 .modal-default-button {

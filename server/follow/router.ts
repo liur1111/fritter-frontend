@@ -4,6 +4,9 @@ import FollowCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as followValidator from './middleware';
 import * as util from './util';
+import ReputationCollection from '../reputation/collection';
+import UserCollection from '../user/collection';
+import ViewCollection from '../view/collection';
 
 const router = express.Router();
 
@@ -134,6 +137,17 @@ router.delete(
   async (req: Request, res: Response) => {
     const followObj = await FollowCollection.unfollowUser(req.session.userId, req.body.username);
     const response = await util.constructFollowResponse(followObj);
+
+    const isFollowing = await FollowCollection.isFollowing(req.session.userId, req.body.username);
+    const reputedUser = await UserCollection.findOneByUsername(req.body.username);
+    const user = await UserCollection.findOneByUserId(req.session.userId);
+    const isFollowed = await FollowCollection.isFollowing(reputedUser._id, user.username);
+    const isViewedEnough = await ViewCollection.hasSeenEnough(req.session.userId, req.body.username);
+
+    if (!isFollowing && !isFollowed && !isViewedEnough) {
+      const stuff = await ReputationCollection.removeDownvote(req.session.userId, req.body.username);
+      const more = await ReputationCollection.removeUpvote(req.session.userId, req.body.username);
+    }
 
     res.status(200).json({
       message: 'Succesfully unfollowed user.',

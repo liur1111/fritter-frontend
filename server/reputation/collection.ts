@@ -118,6 +118,18 @@ import UserCollection from '../user/collection';
   }
 
   /**
+   * Get reputationObj of user with username
+   * 
+   * @param {string} username - The username of the user of the object
+   * @return {Promise<Number>} - the user's follow object
+   */
+  static async findReputationObjByUsername(username: string): Promise<HydratedDocument<Reputation>> {
+    const userObj = await UserCollection.findOneByUsername(username);
+    const reputationObj = await ReputationModel.findOne({user: userObj._id});
+    return reputationObj;
+  }
+
+  /**
    * Upvote another account 
    * 
    * @param {Types.ObjectId} userId - The userId of the current user
