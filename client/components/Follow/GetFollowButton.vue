@@ -121,9 +121,8 @@ export default {
   background-color: #1DA1F2;
   color: #F5F8FA;
   border-radius: 1vh;
-  /* left: 30%; */
   margin-bottom: 1vh;
   width: 200%;
-  
+  cursor: pointer;
 }
 </style>

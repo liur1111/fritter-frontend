@@ -54,5 +54,6 @@ export default {
   border: none !important;
   font-family: inherit;
   font-size: inherit;
+  cursor: pointer;
 }
 </style>

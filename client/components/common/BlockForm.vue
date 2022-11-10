@@ -149,6 +149,7 @@ textarea {
   position: relative;
   width: 40%;
   left: 30%;
+  cursor: pointer;
 }
 
 </style>

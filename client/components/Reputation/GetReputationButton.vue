@@ -142,10 +142,12 @@ export default {
 #button-action {
   background: transparent;
   border-color: transparent;
+  cursor: pointer;
 }
 
 .current-action {
   background: transparent;
   border-color: #1DA1F2;
+  cursor: pointer;
 }
 </style>
