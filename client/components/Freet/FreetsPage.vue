@@ -1,7 +1,7 @@
 <!-- Default page that also displays freets -->
 
 <template>
-  <main>
+  <main class="view">
     <section v-if="$store.state.username">
       <header>
         <h2>Welcome @{{ $store.state.username }}</h2>
@@ -67,8 +67,8 @@ export default {
   name: 'FreetPage',
   components: {FreetComponent, GetFreetsForm, CreateFreetForm},
   mounted() {
-    this.$refs.getFreetsForm.submit();
-  }
+    // this.$refs.getFreetsForm.submit();
+  },
 };
 </script>
 
@@ -92,5 +92,10 @@ section .scrollbox {
   flex: 1 0 50vh;
   padding: 3%;
   overflow-y: scroll;
+}
+
+.view {
+  margin-left: 22.5%;
+  width: 55%;
 }
 </style>

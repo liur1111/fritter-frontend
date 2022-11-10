@@ -70,10 +70,10 @@ export default {
   data() {
     return {
       type: this.type,
-      upvoters: this.upvoters,
-      downvoters: this.downvoters,
-      upvoting: this.upvoting,
-      downvoting: this.downvoting
+      uppers: this.upvoters,
+      downers: this.downvoters,
+      upping: this.upvoting,
+      downing: this.downvoting
     };
   },
   methods: {

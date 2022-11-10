@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       isOpen: false,
-      usernames: this.usernames
+      list: this.usernames
     };
   },
   methods: {

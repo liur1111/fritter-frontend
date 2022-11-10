@@ -1,7 +1,7 @@
 Default page that also displays profiles
 
 <template>
-  <main>
+  <main class="view">
     <section>
       <header>
         <div class="left">
@@ -31,7 +31,7 @@ Default page that also displays profiles
         :username="$store.state.username"
         :profileName="$store.state.profileName"
       />
-      <header>
+      <header class="info-header">
         <div v-if="$store.state.profileFreets.length !== 1">
           <b>{{ $store.state.profileFreets.length }}</b> &nbsp; Freets
         </div>
@@ -81,7 +81,8 @@ export default {
   name: 'ProfilePage',
   components: {FreetComponent, GetProfilesForm, GetFollowButton, GetFollowForm, GetReputationForm, GetReputationButton},
   mounted() {
-    this.$refs.getProfilesForm.submit();
+    console.log('profile page: profileFreets', this.$store.state.profileFreets);
+    // this.$refs.getProfilesForm.submit();
   }
 };
 </script>
@@ -106,5 +107,14 @@ section .scrollbox {
   flex: 1 0 50vh;
   padding: 3%;
   overflow-y: scroll;
+}
+
+.view {
+  margin-left: 22.5%;
+  width: 55%;
+}
+
+.info-section {
+  margin-top: 1vh;
 }
 </style>

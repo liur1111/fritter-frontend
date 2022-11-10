@@ -11,6 +11,7 @@ const store = new Vuex.Store({
   state: {
     filter: null, // Username to filter shown freets by (null = show all)
     freets: [], // All freets created in the app
+    replies: [], // All replies given freetId
     profileFreets: [], // All freets to show up under profilePage for user
     profileName: null, // Username of profilePage
     followers: [], // All followers under profilePage
@@ -117,11 +118,20 @@ const store = new Vuex.Store({
        */
       state.isReputable = isReputable;
     },
+    async updateReplies(state, freetId) {
+      /**
+       * Update the stored replies of a freet given the freetId.
+       * @param freetId - freetId of the freet
+       */
+      const url = `/api/replies?freetId=${freetId}`;
+      const res = await fetch(url).then(async r => r.json());
+      state.replies = res;
+    },
     async refreshFreets(state) {
       /**
        * Request the server for the currently available freets.
        */
-      const url = state.filter ? `/api/users/${state.filter}/freets` : '/api/freets';
+      const url = state.filter ? `/api/freets?author=${state.filter}` : '/api/freets';
       const res = await fetch(url).then(async r => r.json());
       state.freets = res;
     },

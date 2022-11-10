@@ -7,7 +7,9 @@
   >
     <header>
       <h3 class="author">
-        @{{ freet.author }}
+        <router-link style="text-decoration: none;" :to="{name: 'Profile'}">
+          <span v-on:click="goToProfile">@{{ freet.author }}</span>
+        </router-link>
       </h3>
       <div
         v-if="$store.state.username === freet.author"
@@ -53,9 +55,12 @@
         Posted at {{ freet.dateModified }}
         <i v-if="freet.edited">(edited)</i>
       </p>
-      <p class="right" onload="getViews()">
-        <GetViewsForm :freetId="freet._id" />
+      <p>
+        {{ this.viewCount }} {{ this.viewCount === 1 ? "View" : "Views" }}
       </p>
+      <router-link style="text-decoration: none;" :to="{name: 'Replies', params: {freetId: freet._id}}">
+        <span v-on:click="increaseViews">Replies</span>
+      </router-link>
     </div>
     <section class="alerts">
       <article
@@ -70,22 +75,24 @@
 </template>
 
 <script>
-import GetViewsForm from '@/components/Views/GetViewsForm.vue';
 export default {
   name: 'FreetComponent',
-  components: {GetViewsForm},
   props: {
     // Data from the stored freet
     freet: {
       type: Object,
       required: true
-    }
+    },
   },
-  mounted() {},
+  mounted() {
+    console.log('freetcomponent author:', this.freet.author);
+    this.getViewCount();
+  },
   data() {
     return {
       editing: false, // Whether or not this freet is in edit mode
       draft: this.freet.content, // Potentially-new content for this freet
+      viewCount: 0,
       alerts: {} // Displays success/error messages encountered during freet modification
     };
   },
@@ -140,18 +147,9 @@ export default {
       };
       this.request(params);
     },
-    // getViews() {
-    //   const params = {
-    //     method: 'GET',
-    //     callback: () => {
-    //       this.$store.commit('alert', {
-    //         message: 'Successfully retrieved viewcount',
-    //         status: 'Success'
-    //       });
-    //     }
-    //   };
-    //   this.getViewCount(params);
-    // },
+    goToProfile() {
+      this.setNewProfile();
+    },
     async request(params) {
       /**
        * Submits a request to the freet's endpoint
@@ -182,35 +180,99 @@ export default {
         setTimeout(() => this.$delete(this.alerts, e), 3000);
       }
     },
-    // async getViewCount() {
-    //   /**
-    //    * Returns number of views on freet.
-    //    * @param params - Options for the request
-    //    * @param params.body - Body for the request, if it exists
-    //    * @param params.callback - Function to run if the the request succeeds
-    //    */
-    //   const options = {
-    //     method: params.method, headers: {'Content-Type': 'application/json'}
-    //   };
-    //   if (params.body) {
-    //     options.body = params.body;
-    //   }
-    //   try {
-    //     const r = await fetch(`/api/views?freetId=${this.freet._id}`, options);
-    //     if (!r.ok) {
-    //       const res = await r.json();
-    //       throw new Error(res.error);
-    //     } else {
-    //       const res = await r.json();
-    //       this.viewCount = res.numViews;
-    //       this.viewCount = 2;
-    //       params.callback();
-    //     }
-    //   } catch (e) {
-    //     this.$set(this.alerts, e, 'error');
-    //     setTimeout(() => this.$delete(this.alerts, e), 3000);
-    //   }
-    // }
+    async increaseViews() {
+      const url = '/api/views';
+      const params = {
+        method: 'POST',
+        message: 'Successfully added view!',
+        body: JSON.stringify({'freetId': this.freet._id}),
+        callback: () => {
+          this.$set(this.alerts, params.message, 'success');
+          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+        }
+      }
+      const options = {
+        method: params.method, headers: {'Content-Type': 'application/json'}
+      };
+      options.body = params.body;
+      try {
+        const r = await fetch(url, options);
+        const res = await r.json();
+      } catch (e) {
+
+      }
+    },
+    async getViewCount() {
+      /**
+       * Returns number of views on freet.
+       */
+      const url = `/api/views?freetId=${this.freet._id}`;
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        this.viewCount = res.numViews;
+        console.log(res.numViews);
+      } catch (e) {
+        this.viewCount = 0;
+      }
+    },
+    async setNewProfile() {
+      const urlFreets = `/api/freets?author=${this.freet.author}`;
+      const urlFollow = `/api/follow?username=${this.freet.author}`;
+      const urlReputation = `/api/reputation?username=${this.freet.author}`;
+      const urlIsReputable = `/api/reputation/isReputable?username=${this.freet.author}`;
+      try {
+        const rFreets = await fetch(urlFreets);
+        const resFreets = await rFreets.json();
+        
+        if (!rFreets.ok) {
+          throw new Error(resFreets.error);
+        }
+        const rFollow = await fetch(urlFollow);
+        const resFollow = await rFollow.json();
+        
+        if (!rFollow.ok) {
+          throw new Error(resFollow.error);
+        }
+
+        const rReputation = await fetch(urlReputation);
+        const resReputation = await rReputation.json();
+        
+        if (!rReputation.ok) {
+          throw new Error(resReputation.error);
+        }
+
+        const rIsReputable = await fetch(urlIsReputable);
+        const resIsReputable = await rIsReputable.json();
+        
+        if (!rIsReputable.ok) {
+          throw new Error(resIsReputable.error);
+        }
+
+        this.$store.commit('setProfileName', this.freet.author);
+        this.$store.commit('updateProfileFreets', resFreets);
+        this.$store.commit('updateFollowers', resFollow.followObj.followers);
+        this.$store.commit('updateFollowing', resFollow.followObj.following);
+        this.$store.commit('updateUpvoters', resReputation.reputationObj.upvoters);
+        this.$store.commit('updateUpvoting', resReputation.reputationObj.upvoting);
+        this.$store.commit('updateDownvoters', resReputation.reputationObj.downvoters);
+        this.$store.commit('updateDownvoting', resReputation.reputationObj.downvoting);
+        this.$store.commit('updateIsReputable', resIsReputable.isReputable);
+      } catch (e) {
+        if (this.freet.author === this.$store.state.ProfileName) {
+          // This section triggers if you filter to a profileName but they
+          // change their username when you refresh
+          this.$store.commit('setProfileName', null);
+          this.$store.commit('refreshFreets');
+        } else {
+          // Otherwise reset to previous fitler
+          this.value = this.$store.state.profileName;
+        }
+
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    }
   }
 };
 </script>
@@ -220,6 +282,8 @@ export default {
     border: 1px solid #111;
     padding: 20px;
     position: relative;
+    border-radius: 1vh;
+    margin-bottom: 1vh;
 }
 .info-format {
   display: flex;

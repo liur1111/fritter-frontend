@@ -50,7 +50,7 @@
 
 <script>
 export default {
-  name: 'BlockForm',
+  name: 'ReplyBlockForm',
   data() {
     /**
      * Options for submitting this form.
@@ -61,6 +61,7 @@ export default {
       hasBody: false, // Whether or not form request has a body
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshFreets: false, // Whether or not stored freets should be updated after form submission
+      refreshReplies: '',
       alerts: {}, // Displays success/error messages encountered during form submission
       callback: null // Function to run after successful form submission
     };
@@ -76,13 +77,15 @@ export default {
         credentials: 'same-origin' // Sends express-session credentials with request
       };
       if (this.hasBody) {
-        options.body = JSON.stringify(Object.fromEntries(
-          this.fields.map(field => {
-            const {id, value} = field;
-            field.value = '';
-            return [id, value];
-          })
-        ));
+        const objectDict = Object.fromEntries(
+            this.fields.map(field => {
+              const {id, value} = field;
+              field.value = '';
+              return [id, value];
+            })
+         );
+        objectDict['freetId'] = this.refreshReplies;
+        options.body = JSON.stringify(objectDict);
       }
       try {
         const r = await fetch(this.url, options);
@@ -98,6 +101,9 @@ export default {
         }
         if (this.refreshFreets) {
           this.$store.commit('refreshFreets');
+        }
+        if (this.refreshReplies && this.refreshReplies.length > 0) {
+          this.$store.commit('updateReplies', this.refreshReplies);
         }
         if (this.callback) {
           this.callback();
@@ -150,5 +156,4 @@ textarea {
   width: 40%;
   left: 30%;
 }
-
 </style>

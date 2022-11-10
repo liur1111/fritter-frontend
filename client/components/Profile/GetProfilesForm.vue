@@ -9,15 +9,13 @@ export default {
   data() {
     return {value: this.$store.state.profileName};
   },
-  mounted() {
-    this.value = '';
-  },
   methods: {
     async submit() {
-      const urlFreets = this.value ? `/api/freets?author=${this.value}` : `/api/freets?author=${$store.state.username}`;
+      // console.log(this.$store.state.profileName);
+      const urlFreets = this.value ? `/api/freets?author=${this.value}` : `/api/freets?author=${this.$store.state.username}`;
       const urlFollow = this.value ? `/api/follow?username=${this.value}` : '/api/follow';
       const urlReputation = this.value ? `/api/reputation?username=${this.value}` : '/api/reputation';
-      const urlIsReputable = this.value ? `/api/reputation/isReputable?username=${this.value}` : `/api/reputation/isReputable?username=${$store.state.username}`;
+      const urlIsReputable = this.value ? `/api/reputation/isReputable?username=${this.value}` : `/api/reputation/isReputable?username=${this.$store.state.username}`;
       try {
         const rFreets = await fetch(urlFreets);
         const resFreets = await rFreets.json();
@@ -61,7 +59,7 @@ export default {
           // change their username when you refresh
           this.$store.commit('setProfileName', null);
           this.value = ''; // Clear filter to show user profile
-          this.$store.commit('refreshFollowCondition');
+          this.$store.commit('refreshFreets');
         } else {
           // Otherwise reset to previous fitler
           this.value = this.$store.state.profileName;

@@ -11,23 +11,29 @@
       </h1>
     </div>
     <div class="right">
-      <router-link to="/">
+      <router-link 
+        style="text-decoration: none; color: #F5F8FA" 
+        to="/"
+      >
         Home
       </router-link>
       <router-link
         v-if="$store.state.username"
+        style="text-decoration: none; color: #F5F8FA"
         to="/account"
       >
         Account
       </router-link>
       <router-link
         v-if="$store.state.username"
+        style="text-decoration: none; color: #F5F8FA"
         to="/profile"
       >
         Profile
       </router-link>
       <router-link
         v-else
+        style="text-decoration: none; color: #F5F8FA"
         to="/login"
       >
         Login
@@ -48,7 +54,7 @@
 <style scoped>
 nav {
     padding: 1vw 2vw;
-    background-color: #ccc;
+    background-color: #1DA1F2;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -58,6 +64,7 @@ nav {
 .title {
     font-size: 32px;
     margin: 0 5px;
+    color: #F5F8FA;
 }
 
 img {

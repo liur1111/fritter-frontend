@@ -49,7 +49,6 @@ class ViewCollection {
    */
   static async hasSeenEnough(viewerId: Types.ObjectId | string, username: string): Promise<boolean> {
     const freets = await FreetCollection.findAllByUsername(username);
-    console.log(freets);
     const view = await ViewModel.find({viewerId: viewerId, freetId: freets});
     return view.length >= 3;
   }
@@ -65,8 +64,12 @@ class ViewCollection {
     const date = new Date();
     const viewObj = await ViewModel.find({viewerId: viewerId, freetId: freetId}).sort({dateViewed: -1}).limit(1);
     const oldestDate = (viewObj.length == 1) ? viewObj[0].dateViewed : null;
-    oldestDate.setSeconds(oldestDate.getSeconds() + 30);
-    return oldestDate < date;
+    if (oldestDate != null) {
+      oldestDate.setSeconds(oldestDate.getSeconds() + 30);
+      return oldestDate < date;
+    } else {
+      return true;
+    }
   }
 
   /**

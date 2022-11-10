@@ -37,7 +37,7 @@ export default {
   data() {
     return {
       type: this.type,
-      usernames: this.usernames
+      list: this.usernames
     };
   },
   methods: {
