@@ -1,10 +1,10 @@
 <!-- Form for getting freets (all, from user) (inline style) -->
 <template>
   <div>
-    <button v-if="isFollowing" @click="unFollow">
+    <button id="button" v-if="isFollowing" @click="unFollow">
       Unfollow
     </button>
-    <button v-else @click="follow">
+    <button id="button" v-else @click="follow">
       Follow
     </button>
   </div>
@@ -116,3 +116,14 @@ export default {
 };
 </script>
 
+<style>
+#button {
+  background-color: #1DA1F2;
+  color: #F5F8FA;
+  border-radius: 1vh;
+  /* left: 30%; */
+  margin-bottom: 1vh;
+  width: 200%;
+  
+}
+</style>

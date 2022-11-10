@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main class="view">
     <section>
       <header class="top">
         <FreetComponent
@@ -67,5 +67,10 @@ export default {
 <style scoped>
 .top {
   margin-top: 4vh;
+}
+
+.view {
+  margin-left: 22.5%;
+  width: 55%;
 }
 </style>

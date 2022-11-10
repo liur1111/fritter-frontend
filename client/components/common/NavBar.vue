@@ -29,7 +29,7 @@
         style="text-decoration: none; color: #F5F8FA"
         to="/profile"
       >
-        Profile
+        <span v-on:click="">Profile</span>
       </router-link>
       <router-link
         v-else
@@ -50,6 +50,14 @@
     </section>
   </nav>
 </template>
+
+<!-- Form for getting freets (all, from user) (inline style) -->
+
+<script>
+
+
+</script>
+
 
 <style scoped>
 nav {

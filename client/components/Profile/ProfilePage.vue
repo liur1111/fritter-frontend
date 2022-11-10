@@ -21,16 +21,22 @@ Default page that also displays profiles
           />
         </div>
       </header>
-      <GetFollowButton 
-        v-if="$store.state.profileName !== $store.state.username"
-        :username="$store.state.username"
-        :profileName="$store.state.profileName"
-      />
-      <GetReputationButton
-        v-if="($store.state.profileName !== $store.state.username) && $store.state.isReputable"
-        :username="$store.state.username"
-        :profileName="$store.state.profileName"
-      />
+      <header>
+        <div class="left">
+          <GetFollowButton 
+            v-if="$store.state.profileName !== $store.state.username"
+            :username="$store.state.username"
+            :profileName="$store.state.profileName"
+          />
+        </div>
+        <div class="right">
+          <GetReputationButton
+            v-if="($store.state.profileName !== $store.state.username) && $store.state.isReputable"
+            :username="$store.state.username"
+            :profileName="$store.state.profileName"
+          />
+        </div>
+      </header>
       <header class="info-header">
         <div v-if="$store.state.profileFreets.length !== 1">
           <b>{{ $store.state.profileFreets.length }}</b> &nbsp; Freets
@@ -83,6 +89,70 @@ export default {
   mounted() {
     console.log('profile page: profileFreets', this.$store.state.profileFreets);
     // this.$refs.getProfilesForm.submit();
+  },
+  beforeMount(){
+    this.updating();
+  },
+  methods: {
+    async updating() {
+      const urlFreets = `/api/freets?author=${this.$route.params.name}`;
+      const urlFollow = `/api/follow?username=${this.$route.params.name}`;
+      const urlReputation = `/api/reputation?username=${this.$route.params.name}`;
+      const urlIsReputable = `/api/reputation/isReputable?username=${this.$route.params.name}`;
+      try {
+        const rFreets = await fetch(urlFreets);
+        const resFreets = await rFreets.json();
+        
+        if (!rFreets.ok) {
+          throw new Error(resFreets.error);
+        }
+        const rFollow = await fetch(urlFollow);
+        const resFollow = await rFollow.json();
+        
+        if (!rFollow.ok) {
+          throw new Error(resFollow.error);
+        }
+
+        const rReputation = await fetch(urlReputation);
+        const resReputation = await rReputation.json();
+        
+        if (!rReputation.ok) {
+          throw new Error(resReputation.error);
+        }
+
+        const rIsReputable = await fetch(urlIsReputable);
+        const resIsReputable = await rIsReputable.json();
+        
+        if (!rIsReputable.ok) {
+          throw new Error(resIsReputable.error);
+        }
+
+        this.$store.commit('setProfileName', this.$route.params.name);
+        console.log('updating:', this.$route.params.name);
+        this.$store.commit('updateProfileFreets', resFreets);
+        this.$store.commit('updateFollowers', resFollow.followObj.followers);
+        this.$store.commit('updateFollowing', resFollow.followObj.following);
+        this.$store.commit('updateUpvoters', resReputation.reputationObj.upvoters);
+        this.$store.commit('updateUpvoting', resReputation.reputationObj.upvoting);
+        this.$store.commit('updateDownvoters', resReputation.reputationObj.downvoters);
+        this.$store.commit('updateDownvoting', resReputation.reputationObj.downvoting);
+        this.$store.commit('updateIsReputable', resIsReputable.isReputable);
+        console.log('finished updating:', this.$store.state.profileFreets);
+      } catch (e) {
+        if (this.$route.params.name === this.$store.state.ProfileName) {
+          // This section triggers if you filter to a profileName but they
+          // change their username when you refresh
+          this.$store.commit('setProfileName', null);
+          this.$store.commit('refreshFreets');
+        } else {
+          // Otherwise reset to previous fitler
+          this.value = this.$store.state.profileName;
+        }
+
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    }
   }
 };
 </script>

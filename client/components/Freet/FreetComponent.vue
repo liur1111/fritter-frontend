@@ -7,8 +7,9 @@
   >
     <header>
       <h3 class="author">
-        <router-link style="text-decoration: none;" :to="{name: 'Profile'}">
+        <router-link style="text-decoration: none; color: black;" :to="{name: 'Profile', params: {name: freet.author}}">
           <span v-on:click="goToProfile">@{{ freet.author }}</span>
+          <!-- @{{ freet.author }} -->
         </router-link>
       </h3>
       <div
@@ -58,7 +59,7 @@
       <p>
         {{ this.viewCount }} {{ this.viewCount === 1 ? "View" : "Views" }}
       </p>
-      <router-link style="text-decoration: none;" :to="{name: 'Replies', params: {freetId: freet._id}}">
+      <router-link style="text-decoration: none; color: black; font-weight: bold;" :to="{name: 'Replies', params: {freetId: freet._id}}">
         <span v-on:click="increaseViews">Replies</span>
       </router-link>
     </div>
@@ -85,7 +86,6 @@ export default {
     },
   },
   mounted() {
-    console.log('freetcomponent author:', this.freet.author);
     this.getViewCount();
   },
   data() {
@@ -148,7 +148,7 @@ export default {
       this.request(params);
     },
     goToProfile() {
-      this.setNewProfile();
+      this.$store.commit('updateProfileFreets', []);
     },
     async request(params) {
       /**
@@ -211,68 +211,12 @@ export default {
         const r = await fetch(url);
         const res = await r.json();
         this.viewCount = res.numViews;
-        console.log(res.numViews);
+        console.log('viewcount:', res.numViews);
       } catch (e) {
         this.viewCount = 0;
       }
     },
-    async setNewProfile() {
-      const urlFreets = `/api/freets?author=${this.freet.author}`;
-      const urlFollow = `/api/follow?username=${this.freet.author}`;
-      const urlReputation = `/api/reputation?username=${this.freet.author}`;
-      const urlIsReputable = `/api/reputation/isReputable?username=${this.freet.author}`;
-      try {
-        const rFreets = await fetch(urlFreets);
-        const resFreets = await rFreets.json();
-        
-        if (!rFreets.ok) {
-          throw new Error(resFreets.error);
-        }
-        const rFollow = await fetch(urlFollow);
-        const resFollow = await rFollow.json();
-        
-        if (!rFollow.ok) {
-          throw new Error(resFollow.error);
-        }
-
-        const rReputation = await fetch(urlReputation);
-        const resReputation = await rReputation.json();
-        
-        if (!rReputation.ok) {
-          throw new Error(resReputation.error);
-        }
-
-        const rIsReputable = await fetch(urlIsReputable);
-        const resIsReputable = await rIsReputable.json();
-        
-        if (!rIsReputable.ok) {
-          throw new Error(resIsReputable.error);
-        }
-
-        this.$store.commit('setProfileName', this.freet.author);
-        this.$store.commit('updateProfileFreets', resFreets);
-        this.$store.commit('updateFollowers', resFollow.followObj.followers);
-        this.$store.commit('updateFollowing', resFollow.followObj.following);
-        this.$store.commit('updateUpvoters', resReputation.reputationObj.upvoters);
-        this.$store.commit('updateUpvoting', resReputation.reputationObj.upvoting);
-        this.$store.commit('updateDownvoters', resReputation.reputationObj.downvoters);
-        this.$store.commit('updateDownvoting', resReputation.reputationObj.downvoting);
-        this.$store.commit('updateIsReputable', resIsReputable.isReputable);
-      } catch (e) {
-        if (this.freet.author === this.$store.state.ProfileName) {
-          // This section triggers if you filter to a profileName but they
-          // change their username when you refresh
-          this.$store.commit('setProfileName', null);
-          this.$store.commit('refreshFreets');
-        } else {
-          // Otherwise reset to previous fitler
-          this.value = this.$store.state.profileName;
-        }
-
-        this.$set(this.alerts, e, 'error');
-        setTimeout(() => this.$delete(this.alerts, e), 3000);
-      }
-    }
+      
   }
 };
 </script>

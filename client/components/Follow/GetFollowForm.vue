@@ -1,7 +1,7 @@
 <template>
   <div>
-    <button @click="open">
-      {{ usernames.length }}
+    <button id="button-info" @click="open">
+      <b>{{ usernames.length }}</b>
     </button>
     &nbsp;{{ this.type }}
     <GetFollowPopUp 
@@ -46,3 +46,13 @@ export default {
   }
 };
 </script>
+
+<style>
+#button-info {
+  background: transparent;
+  color: black;
+  border: none !important;
+  font-family: inherit;
+  font-size: inherit;
+}
+</style>

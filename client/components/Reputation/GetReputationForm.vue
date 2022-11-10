@@ -1,7 +1,7 @@
 <template>
   <div>
-    <button @click="open">
-      {{ upvoters.length - downvoters.length }}
+    <button id="button-info" @click="open">
+      <b>{{ upvoters.length - downvoters.length }}</b>
     </button>
     &nbsp;Reputation
     <GetReputationPopUp 

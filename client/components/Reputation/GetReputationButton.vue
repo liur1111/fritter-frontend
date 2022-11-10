@@ -1,18 +1,22 @@
 <!-- Form for getting freets (all, from user) (inline style) -->
 <template>
   <div>
-    <button v-if="isUpvoting" @click="removeUpvote">
-      Remove Upvote
-    </button>
-    <button v-else @click="upvote">
-      Upvote
-    </button>
-    <button v-if="isDownvoting" @click="removeDownvote">
-      Remove Downvote
-    </button>
-    <button v-else @click="downvote">
-      Downvote
-    </button>
+    <div>
+      <button class="current-action" v-if="isUpvoting" @click="removeUpvote">
+        ▲
+      </button>
+      <button id="button-action" v-else @click="upvote">
+        ▲
+      </button>
+    </div>
+    <div>
+      <button class="current-action" v-if="isDownvoting" @click="removeDownvote">
+        ▼
+      </button>
+      <button id="button-action" v-else @click="downvote">
+        ▼
+      </button>
+    </div>
   </div>
 </template>
 
@@ -134,3 +138,14 @@ export default {
 };
 </script>
 
+<style>
+#button-action {
+  background: transparent;
+  border-color: transparent;
+}
+
+.current-action {
+  background: transparent;
+  border-color: #1DA1F2;
+}
+</style>
